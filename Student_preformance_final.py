@@ -1,3 +1,38 @@
+'''
+Summary and Challenges
+This project is focused on predicting students' final grades (G3) using datasets 
+capturing Math and Portuguese student performance. The data combines demographic, 
+academic, and behavioral features to train a machine learning model.
+Key Challenges:
+•	Data Overlap: several students appear in both datasets, requiring careful 
+handling to avoid redundancy.
+•	Data Cleaning: Duplicate records, Outliers and missing values in key features, 
+and non-numeric data .
+•	Feature Redundancy: Strong correlations between features (e.g., G1 and G2) 
+could cause multicollinearity, reducing model accuracy.
+•	Interpretability vs. Complexity: Balancing the need for a simple accurate 
+model while keeping it interpretable for academic purposes.
+
+Steps in summary:
+    1- read 2 csv and convert to data set
+    2- remove duplicate records within each dataset.
+    3- combine the 2 data set 
+    4- remove overlab Data (average G1, G2, G3)
+    5- check missing values.
+    6- visualize distribution of target (G3)
+    7- visualize numberic features correlation.
+    8- handle multiclinearity (average G1 & G2 as it it simple dosn't need lasso')
+    9- encode catogrial featuers (non-numeric)
+    10- visualize encoding features correlation.
+    11- remove outlier
+    12- scale numeric features to reduce its range for better modeling
+by this data prepartion is finished and will start the model process:
+    13- Separate features and target variable (G3)
+    14- split the data for train and test.
+    15- train the model.
+    16- measure model accurcey .
+    17- evaluate the model.
+'''
 # Import necessary libraries
 import pandas as pd  # For data manipulation and analysis
 import matplotlib.pyplot as plt  # For data visualization
@@ -11,7 +46,14 @@ from sklearn.metrics import mean_squared_error, r2_score
 student_mat = pd.read_csv("student-mat.csv", sep=";")  # Load math performance dataset
 student_por = pd.read_csv("student-por.csv", sep=";")  # Load Portuguese performance dataset
 
-# Standardize formatting for shared columns
+# Determine the Original number of students in each dataset
+total_students_math = student_mat.shape[0]
+total_students_port = student_por.shape[0]
+print(f"Number of students in Math: {total_students_math}")
+print(f"Number of students in Portuguese: {total_students_port}")
+
+
+# Standardize formatting for shared columns (for accurate detrmine of shared students)
 merged_columns = ["school", "sex", "age", "address", "famsize", "Pstatus", "Medu", "Fedu", "Mjob", "Fjob", "reason", "nursery", "internet"]
 for col in merged_columns:
     if student_mat[col].dtype == 'object':
@@ -30,8 +72,8 @@ student_por = student_por.drop_duplicates(subset=merged_columns)
 # Determine the number of students in each dataset
 total_students_math = student_mat.shape[0]
 total_students_port = student_por.shape[0]
-print(f"Number of students in Math: {total_students_math}")
-print(f"Number of students in Portuguese: {total_students_port}")
+print(f"Number of students in Math after remove duplicate: {total_students_math}")
+print(f"Number of students in after remove duplicate Portuguese: {total_students_port}")
 
 # Identify common students based on shared attributes
 # Suffixes differentiate overlapping column names in merged datasets
@@ -183,7 +225,7 @@ print ('Encoding result analsys : \nAll non-numeric features that has 2 values o
 print ('but if the feature has more than 2 value mapped to #features = #values-1 for this feature (as we use drop_first=True)')
 
 
-# Select only encoded features and the target variable 'G3'
+# visualize only encoded features coorelation and the target variable 'G3'
 encoded_features_and_target = encoded_data_numeric[[col for col in encoded_data_numeric.columns if col.startswith(tuple(categorical_columns))] + ['G3']]
 # Correlation heatmap for encoded features and G3
 plt.figure(figsize=(14, 10))
